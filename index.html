@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Effortless Email Verification - Free & Fully Managed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm p-4 md:p-6">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="#" id="verifyFlowLogo" class="text-2xl font-bold text-indigo-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    VerifyFlow
+                </a>
+                <nav>
+                    <a href="#" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Home</a>
+                    <span id="userStatus" class="ml-4 text-gray-700"></span>
+                    <button id="signOutButton" class="ml-4 bg-red-500 text-white px-3 py-1 rounded-md hidden hover:bg-red-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">Sign Out</button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-50 to-white">
+            <div class="max-w-4xl w-full text-center">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
+                    Streamlined Email Verification, <span class="text-indigo-600">Completely Free.</span>
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+                    Effortlessly verify user emails with our simple, one-webhook solution. We handle everything, so you don't have to.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#" id="getStartedButton" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-full shadow-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 transform hover:scale-105">
+                        Get Started - It's Free!
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <!-- Features Section -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+            <div class="container mx-auto max-w-6xl">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-12">
+                    How VerifyFlow Simplifies Verification
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                    <!-- Feature 1: One Webhook -->
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <div class="text-indigo-600 text-5xl mb-6 text-center">
+                            <span class="material-icons text-5xl">flash_on</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 text-center">One Webhook Simplicity</h3>
+                        <p class="text-gray-600 text-center">
+                            Integrate our powerful verification with a single webhook. No complex APIs, just pure simplicity.
+                        </p>
+                    </div>
+
+                    <!-- Feature 2: Effortless Email Delivery -->
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <div class="text-indigo-600 text-5xl mb-6 text-center">
+                            <span class="material-icons text-5xl">email</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 text-center">Effortless Email Delivery</h3>
+                        <p class="text-gray-600 text-center">
+                            We handle sending verification emails directly to your users, ensuring high deliverability.
+                        </p>
+                    </div>
+
+                    <!-- Feature 3: User-Friendly Verification -->
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <div class="text-indigo-600 text-5xl mb-6 text-center">
+                            <span class="material-icons text-5xl">check_circle</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 text-center">User-Friendly Verification</h3>
+                        <p class="text-gray-600 text-center">
+                            Users click a simple button in their email, and their verification is complete.
+                        </p>
+                    </div>
+
+                    <!-- Feature 4: Fully Managed by Us -->
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <div class="text-indigo-600 text-5xl mb-6 text-center">
+                            <span class="material-icons text-5xl">build</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 text-center">Fully Managed by Us</h3>
+                        <p class="text-gray-600 text-center">
+                            Focus on your product while we manage all the complexities of email verification infrastructure.
+                        </p>
+                    </div>
+
+                    <!-- Feature 5: Seamless Fallback -->
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <div class="text-indigo-600 text-5xl mb-6 text-center">
+                            <span class="material-icons text-5xl">sync_alt</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 text-center">Seamless Fallback</h3>
+                        <p class="text-gray-600 text-center">
+                            Our system includes a robust fallback mechanism for users, ensuring a smooth experience every time.
+                        </p>
+                    </div>
+
+                    <!-- Feature 6: Always Free -->
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <div class="text-indigo-600 text-5xl mb-6 text-center">
+                            <span class="material-icons text-5xl">payments</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 text-center">Always Free</h3>
+                        <p class="text-gray-600 text-center">
+                            Enjoy all these features at no cost. Our solution is completely free for all users.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section class="bg-indigo-700 py-16 px-4 sm:px-6 lg:px-8 text-white text-center">
+            <div class="container mx-auto max-w-4xl">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-6">
+                    Ready to Simplify Your Email Verification?
+                </h2>
+                <p class="text-lg mb-8 opacity-90">
+                    Get started today with VerifyFlow and experience hassle-free email verification.
+                </p>
+                <a href="#" id="startVerifyingButton" class="inline-flex items-center justify-center px-10 py-5 border border-transparent text-base font-medium rounded-full shadow-lg text-indigo-700 bg-white hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-300 transform hover:scale-105">
+                    Start Verifying for Free
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-gray-300 py-8 px-4 sm:px-6 lg:px-8">
+            <div class="container mx-auto text-center">
+                <p>&copy; 2025 VerifyFlow. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- The Modal -->
+    <div id="authModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Sign In / Sign Up</h2>
+
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                <input type="email" id="email" class="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" placeholder="your@example.com">
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
+                <input type="password" id="password" class="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" placeholder="********">
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <button id="emailAuthButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200">
+                    Continue with Email
+                </button>
+                <button id="googleSignInButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.24 10.23c-.22-.61-.35-1.29-.35-2.02 0-1.57.65-2.73 1.77-3.61.94-.74 2.23-1.2 3.61-1.2 1.34 0 2.5.42 3.42 1.15l-1.89 1.89c-.5-.36-1.14-.54-1.78-.54-1.07 0-1.87.48-2.39 1.38-.52.9-.52 2.08 0 2.98.52.9 1.32 1.38 2.39 1.38.64 0 1.28-.18 1.78-.54l1.89 1.89c-.92.73-2.08 1.15-3.42 1.15-1.38 0-2.67-.46-3.61-1.2-.92-.74-1.77-1.9-1.77-3.47zm-1.83 6.64c-.22-.61-.35-1.29-.35-2.02 0-1.57.65-2.73 1.77-3.61.94-.74 2.23-1.2 3.61-1.2 1.34 0 2.5.42 3.42 1.15l-1.89 1.89c-.5-.36-1.14-.54-1.78-.54-1.07 0-1.87.48-2.39 1.38-.52.9-.52 2.08 0 2.98.52.9 1.32 1.38 2.39 1.38.64 0 1.28-.18 1.78-.54l1.89 1.89c-.92.73-2.08 1.15-3.42 1.15-1.38 0-2.67-.46-3.61-1.2-.92-.74-1.77-1.9-1.77-3.47z"/></svg>
+                    Sign in with Google
+                </button>
+            </div>
+            <p id="authMessage" class="mt-4 text-center text-sm text-red-500"></p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            GoogleAuthProvider,
+            signInWithPopup,
+            onAuthStateChanged,
+            signOut,
+            signInWithCustomToken
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        // Using global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyC9dOOGt2LyboihIhMRzKuTMea-lZshvk0",
+            authDomain: "verifyflowemails.firebaseapp.com",
+            projectId: "verifyflowemails",
+            storageBucket: "verifyflowemails.firebasestorage.app",
+            messagingSenderId: "239326065711",
+            appId: "1:239326065711:web:fc4de39b38ba50d8d6c2da",
+            measurementId: "G-MQF7KX6C4M"
+        };
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app); // Get the Auth service
+        const db = getFirestore(app); // Get the Firestore service
+
+        let userId = null; // To store the current user's ID
+
+        // Get DOM elements
+        const authModal = document.getElementById('authModal');
+        const closeButton = document.querySelector('.close-button');
+        const verifyFlowLogo = document.getElementById('verifyFlowLogo');
+        const getStartedButton = document.getElementById('getStartedButton');
+        const startVerifyingButton = document.getElementById('startVerifyingButton');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const emailAuthButton = document.getElementById('emailAuthButton'); // New button
+        const googleSignInButton = document.getElementById('googleSignInButton');
+        const authMessage = document.getElementById('authMessage');
+        const userStatus = document.getElementById('userStatus');
+        const signOutButton = document.getElementById('signOutButton');
+
+        // Function to show the modal
+        function showModal() {
+            authModal.style.display = 'flex'; // Use flex to center content
+            authMessage.textContent = ''; // Clear any previous messages
+            emailInput.value = ''; // Clear input fields
+            passwordInput.value = '';
+        }
+
+        // Function to hide the modal
+        function hideModal() {
+            authModal.style.display = 'none';
+        }
+
+        // Redirect to dashboard
+        function redirectToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Event listeners to open the modal
+        verifyFlowLogo.addEventListener('click', (e) => {
+            e.preventDefault();
+            showModal();
+        });
+        getStartedButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            showModal();
+        });
+        startVerifyingButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            showModal();
+        });
+
+        // Event listener to close the modal
+        closeButton.addEventListener('click', hideModal);
+
+        // Close modal if clicked outside content
+        window.addEventListener('click', (event) => {
+            if (event.target == authModal) {
+                hideModal();
+            }
+        });
+
+        // Handle Email Sign In / Sign Up (single button logic)
+        emailAuthButton.addEventListener('click', async () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            authMessage.textContent = ''; // Clear previous messages
+
+            if (!email || !password) {
+                authMessage.textContent = 'Please enter both email and password.';
+                return;
+            }
+
+            try {
+                // Attempt to sign in
+                await signInWithEmailAndPassword(auth, email, password);
+                authMessage.textContent = 'Signed in successfully!';
+                hideModal();
+                redirectToDashboard(); // Redirect on successful sign-in
+            } catch (error) {
+                // If sign-in fails because user not found, attempt to create account
+                if (error.code === 'auth/user-not-found') {
+                    try {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                        authMessage.textContent = 'Account created successfully! You are now signed in.';
+                        hideModal();
+                        redirectToDashboard(); // Redirect on successful sign-up
+                    } catch (createError) {
+                        console.error("Error creating account:", createError);
+                        authMessage.textContent = `Error creating account: ${createError.message}`;
+                    }
+                } else {
+                    console.error("Error signing in:", error);
+                    authMessage.textContent = `Sign In Error: ${error.message}`;
+                }
+            }
+        });
+
+        // Handle Google Sign In
+        googleSignInButton.addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            authMessage.textContent = ''; // Clear previous messages
+            try {
+                await signInWithPopup(auth, provider);
+                authMessage.textContent = 'Signed in with Google successfully!';
+                hideModal();
+                redirectToDashboard(); // Redirect on successful Google sign-in
+            } catch (error) {
+                console.error("Error signing in with Google:", error);
+                authMessage.textContent = `Google Sign In Error: ${error.message}`;
+            }
+        });
+
+        // Handle Sign Out
+        signOutButton.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                userStatus.textContent = '';
+                signOutButton.classList.add('hidden');
+                console.log("User signed out.");
+                // No redirect here, stay on landing page
+            } catch (error) {
+                console.error("Error signing out:", error);
+                authMessage.textContent = `Sign Out Error: ${error.message}`;
+            }
+        });
+
+        // Listen for authentication state changes and update UI
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                userId = user.uid;
+                userStatus.textContent = `Welcome, ${user.email || user.displayName || 'User'}! (ID: ${userId})`;
+                signOutButton.classList.remove('hidden');
+                // If user is already authenticated and lands on index.html, redirect them to dashboard
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+                    redirectToDashboard();
+                }
+            } else {
+                // User is signed out
+                userId = null;
+                userStatus.textContent = '';
+                signOutButton.classList.add('hidden');
+            }
+        });
+
+        // Initial authentication check:
+        // If an initialAuthToken is provided by the Canvas environment, attempt to sign in with it.
+        // Otherwise, no automatic sign-in occurs, leaving the user unauthenticated (a "guest").
+        async function initializeAuth() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                }
+            } catch (error) {
+                console.error("Firebase initial authentication error:", error);
+                // Optionally display an error message to the user
+            }
+        }
+
+        // Call the initial authentication function when the script loads
+        initializeAuth();
+    </script>
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Webhook - VerifyFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Lighter background */
+            color: #334155;
+            display: flex;
+            min-height: 100vh;
+        }
+        /* Sidebar Styling */
+        .sidebar {
+            width: 280px; /* Slightly wider for better spacing */
+            background-color: #1a202c; /* Darker, more professional feel */
+            color: #e2e8f0; /* Lighter text for contrast */
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar-header {
+            font-size: 1.75rem; /* Larger header */
+            font-weight: 700; /* Bolder */
+            margin-bottom: 2.5rem; /* More space */
+            text-align: center;
+            color: #6366f1; /* Indigo for branding */
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.85rem 1.25rem; /* Increased padding */
+            margin-bottom: 0.75rem; /* More space between items */
+            border-radius: 0.625rem; /* More rounded */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            color: #cbd5e1; /* Light gray for inactive links */
+            text-decoration: none;
+            font-weight: 500; /* Medium weight */
+        }
+        .sidebar-nav a:hover {
+            background-color: #2d3748; /* Slightly lighter dark on hover */
+            color: #ffffff;
+        }
+        .sidebar-nav a.active-nav {
+            background-color: #4338ca; /* Darker indigo for active */
+            color: #ffffff;
+            font-weight: 600; /* Bolder active text */
+            box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.1), inset 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        .sidebar-nav .material-icons {
+            margin-right: 1rem; /* More space for icon */
+            font-size: 1.6rem; /* Slightly larger icons */
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2.5rem; /* Increased overall padding */
+            background-color: #f8fafc;
+            overflow-y: auto; /* Allow scrolling if content is long */
+        }
+        .content-section {
+            background-color: #ffffff;
+            padding: 2.5rem; /* Increased padding */
+            border-radius: 1rem; /* More rounded corners */
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1), 0 6px 15px -3px rgba(0, 0, 0, 0.05); /* Stronger shadow */
+            max-width: 900px; /* Increased max-width */
+            width: 100%;
+            text-align: left;
+            display: none;
+            margin-bottom: 2rem; /* Space between sections if multiple visible */
+        }
+        .content-section.active {
+            display: block;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6); /* Darker overlay */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 2rem; /* Increased padding */
+            border-radius: 1rem; /* More rounded */
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2), 0 8px 20px -4px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+            width: 90%;
+            max-width: 650px; /* Adjusted max-width for better content display */
+            position: relative;
+            display: flex; /* Use flex for internal layout */
+            flex-direction: column;
+            align-items: center;
+        }
+        .modal-content h2 {
+            font-size: 2.25rem; /* Larger heading */
+            font-weight: 700;
+            color: #1a202c; /* Darker heading color */
+            margin-bottom: 1.5rem;
+        }
+        .close-button {
+            color: #94a3b8; /* Grayish color */
+            float: right;
+            font-size: 32px; /* Larger close button */
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            transition: color 0.2s ease-in-out;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: #334155;
+        }
+        .webhook-details-content {
+            margin-top: 1.5rem;
+            background-color: #f1f5f9; /* Light gray background */
+            padding: 1.5rem; /* Increased padding */
+            border-radius: 0.75rem; /* Rounded corners */
+            font-family: 'Fira Code', 'monospace'; /* More modern monospace font */
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            width: 100%; /* Ensure it takes full width of modal content */
+        }
+        .webhook-details-content h3 {
+            font-size: 1.5rem; /* Subheading size */
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        .webhook-details-content p {
+            margin-bottom: 0.75rem;
+            color: #475569; /* Slightly darker text */
+        }
+        .webhook-details-content ul {
+            list-style: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .webhook-details-content li {
+            margin-bottom: 0.5rem;
+            color: #475569;
+        }
+        .webhook-details-content strong {
+            color: #1a202c; /* Stronger color for bold text */
+        }
+        .webhook-details-content .bg-gray-100 {
+            background-color: #e2e8f0; /* Lighter gray for URL */
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #cbd5e1;
+            word-break: break-all; /* Ensure long URLs wrap */
+        }
+        .webhook-details-content pre {
+            background-color: #1e293b; /* Darker background for code block */
+            color: #f8fafc; /* Light text for code */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-size: 0.875rem; /* Slightly smaller code font */
+            line-height: 1.5;
+        }
+        #sendTestEmailButton {
+            margin-top: 2rem; /* More space above button */
+            padding: 0.75rem 2rem; /* Larger button padding */
+            font-size: 1.1rem; /* Larger font size */
+        }
+        #testEmailMessage {
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            VerifyFlow
+        </div>
+        <nav class="sidebar-nav flex-grow">
+            <a href="#" data-section="my-webhook-content" class="active-nav">
+                <span class="material-icons">webhook</span>
+                My Webhook
+            </a>
+            <a href="#" data-section="about-content">
+                <span class="material-icons">info</span>
+                About
+            </a>
+        </nav>
+        <div class="mt-auto pt-6 border-t border-gray-700"> <!-- Added top border for separation -->
+            <a href="#" data-section="settings-content" class="flex items-center justify-center px-4 py-2 mb-3 rounded-md text-white bg-gray-700 hover:bg-gray-800 transition-colors duration-200">
+                <span class="material-icons mr-2">settings</span>
+                Settings
+            </a>
+            <span id="userDashboardStatus" class="block text-gray-400 text-sm mb-4 text-center"></span>
+            <button id="signOutDashboardButton" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center">
+                <span class="material-icons mr-2">logout</span>
+                Sign Out
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- My Webhook Content -->
+        <div id="my-webhook-content" class="content-section active">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
+                Your Webhook Solution
+            </h1>
+            <p class="text-lg sm:text-xl text-gray-600 mb-6 max-w-2xl mx-auto">
+                Your dedicated webhook for effortless email verification:
+            </p>
+            <div class="bg-gray-100 p-4 rounded-lg mb-8 text-center border border-gray-200">
+                <code class="text-xl font-mono text-indigo-700 break-all select-all">https://eod8e6xe3qjydo9.m.pipedream.net</code>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-6">
+                <button id="howToCallWebhookButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center">
+                    <span class="material-icons mr-2">code</span>
+                    How to Call This Webhook
+                </button>
+                <button id="whatEmailLooksLikeButton" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center">
+                    <span class="material-icons mr-2">visibility</span>
+                    What the email looks like
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Content -->
+        <div id="settings-content" class="content-section">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">Settings</h2>
+            <p class="text-gray-700">Manage your account settings, preferences, and integrations here.</p>
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Profile Settings</h3>
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <p class="text-gray-600">Update your email, password, or display name.</p>
+                    <!-- Add more settings fields here -->
+                </div>
+            </div>
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">API & Webhook Configuration</h3>
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <p class="text-gray-600">Configure your webhook URL and manage API keys.</p>
+                    <!-- Add API/Webhook configuration fields here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- About Content -->
+        <div id="about-content" class="content-section">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">About VerifyFlow</h2>
+            <p class="text-gray-700 mb-4">VerifyFlow provides a simple, free, and fully managed email verification solution for all your users.</p>
+            <p class="text-gray-700">Our mission is to make email verification effortless, allowing developers and businesses to focus on building great products without worrying about email deliverability or complex infrastructure.</p>
+            <p class="text-gray-700 mt-4">&copy; 2025 VerifyFlow. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- Webhook Details Modal -->
+    <div id="webhookDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeWebhookDetailsModal">&times;</span>
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">How to Call Your Webhook</h2>
+
+            <div class="webhook-details-content">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Webhook Call Requirements:</h3>
+                <p class="text-gray-700 mb-2">To call this webhook, send a <strong>POST</strong> request to the URL below with a JSON body containing the following fields:</p>
+                <div class="bg-gray-100 p-3 rounded-lg mb-4 text-center border border-gray-200">
+                    <code class="font-mono text-indigo-700 break-all select-all">https://eod8e6xe3qjydo9.m.pipedream.net</code>
+                </div>
+                <ul class="list-disc list-inside text-gray-700 pl-5">
+                    <li><strong>to_address</strong> (string, required): The email address of the user to verify.</li>
+                    <li><strong>reply_to</strong> (string, optional): The email address for replies to the verification email.</li>
+                    <li><strong>app_name</strong> (string, required): The name of your application, used in the verification email.</li>
+                    <li><strong>redirect_url</strong> (string, required): The URL where the user should be redirected after successful verification.</li>
+                </ul>
+                <p class="text-gray-700 mt-4">Example JSON Body:</p>
+                <pre><code>{
+    "to_address": "user@example.com",
+    "reply_to": "noreply@your-app.com",
+    "app_name": "Your Awesome App",
+    "redirect_url": "https://your-app.com/verification-success"
+}</code></pre>
+            </div>
+
+            <button id="sendTestEmailButton" class="mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center mx-auto">
+                <span class="material-icons mr-2">send</span>
+                Send Test Event to My Email
+            </button>
+            <p id="testEmailMessage" class="mt-4 text-center text-sm text-red-500"></p>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signOut,
+            signInWithCustomToken
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        // Using global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyC9dOOGt2LyboihIhMRzKuTMea-lZshvk0",
+            authDomain: "verifyflowemails.firebaseapp.com",
+            projectId: "verifyflowemails",
+            storageBucket: "verifyflowemails.firebasestorage.app",
+            messagingSenderId: "239326065711",
+            appId: "1:239326065711:web:fc4de39b38ba50d8d6c2da",
+            measurementId: "G-MQF7KX6C4M"
+        };
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Get DOM elements
+        const userDashboardStatus = document.getElementById('userDashboardStatus');
+        const signOutDashboardButton = document.getElementById('signOutDashboardButton');
+        const contentSections = document.querySelectorAll('.content-section');
+        const sidebarNavLinks = document.querySelectorAll('.sidebar-nav a, .mt-auto a');
+        const howToCallWebhookButton = document.getElementById('howToCallWebhookButton');
+        const whatEmailLooksLikeButton = document.getElementById('whatEmailLooksLikeButton'); // New button
+        const webhookDetailsModal = document.getElementById('webhookDetailsModal');
+        const closeWebhookDetailsModal = document.getElementById('closeWebhookDetailsModal');
+        const sendTestEmailButton = document.getElementById('sendTestEmailButton');
+        const testEmailMessage = document.getElementById('testEmailMessage');
+
+
+        // Function to show a specific content section
+        function showContent(sectionId) {
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update active state for sidebar links
+            sidebarNavLinks.forEach(link => {
+                // Remove 'active-nav' from all links first
+                link.classList.remove('active-nav');
+                // Add 'active-nav' to the clicked link
+                if (link.dataset.section === sectionId) {
+                    link.classList.add('active-nav');
+                }
+            });
+        }
+
+        // Add event listeners to sidebar navigation links
+        sidebarNavLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = e.currentTarget.dataset.section;
+                if (sectionId) {
+                    showContent(sectionId);
+                }
+            });
+        });
+
+        // Open webhook details modal
+        howToCallWebhookButton.addEventListener('click', () => {
+            webhookDetailsModal.style.display = 'flex';
+            testEmailMessage.textContent = ''; // Clear message when opening
+        });
+
+        // Open image in new tab
+        whatEmailLooksLikeButton.addEventListener('click', () => {
+            window.open('/format.jpg', '_blank');
+        });
+
+        // Close webhook details modal
+        closeWebhookDetailsModal.addEventListener('click', () => {
+            webhookDetailsModal.style.display = 'none';
+        });
+
+        // Close modal if clicked outside content
+        window.addEventListener('click', (event) => {
+            if (event.target == webhookDetailsModal) {
+                webhookDetailsModal.style.display = 'none';
+            }
+        });
+
+        // Handle Send Test Email
+        sendTestEmailButton.addEventListener('click', async () => {
+            const user = auth.currentUser;
+            if (!user || !user.email) {
+                testEmailMessage.textContent = 'Please sign in to send a test email.';
+                testEmailMessage.style.color = 'red';
+                return;
+            }
+
+            const webhookUrl = 'https://eod8e6xe3qjydo9.m.pipedream.net';
+            const payload = {
+                to_address: user.email,
+                reply_to: "noreply.api.webhook@gmail.com",
+                app_name: "test",
+                redirect_url: "about:blank"
+            };
+
+            testEmailMessage.textContent = 'Sending test email...';
+            testEmailMessage.style.color = 'blue';
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                if (response.ok) {
+                    testEmailMessage.textContent = 'Test email request sent successfully! Check your email.';
+                    testEmailMessage.style.color = 'green';
+                } else {
+                    const errorText = await response.text();
+                    testEmailMessage.textContent = `Failed to send test email: ${response.status} - ${errorText}`;
+                    testEmailMessage.style.color = 'red';
+                }
+            } catch (error) {
+                console.error("Error sending test email:", error);
+                testEmailMessage.textContent = `Error sending test email: ${error.message}`;
+                testEmailMessage.style.color = 'red';
+            }
+        });
+
+
+        // Handle Sign Out
+        signOutDashboardButton.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                // Redirect to landing page after sign out
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error("Error signing out:", error);
+                // Display error message on dashboard if needed
+            }
+        });
+
+        // Listen for authentication state changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, display user info
+                userDashboardStatus.textContent = `Logged in as: ${user.email || user.displayName || 'User'}`;
+                signOutDashboardButton.classList.remove('hidden');
+                // Show 'my-webhook-content' by default on load
+                showContent('my-webhook-content');
+            } else {
+                // User is signed out or not authenticated, redirect to landing page
+                console.log("User not authenticated, redirecting to index.html");
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Initial authentication check for dashboard
+        async function initializeAuthForDashboard() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                }
+                // onAuthStateChanged will handle redirection if not authenticated
+            } catch (error) {
+                console.error("Firebase initial authentication error on dashboard:", error);
+                // If there's an error with token, it means user is likely not authenticated,
+                // onAuthStateChanged will handle the redirect.
+            }
+        }
+
+        // Call the initial authentication function when the script loads
+        initializeAuthForDashboard();
+    </script>
+</body>
+</html>
